@@ -16,7 +16,7 @@ Please cite the original paper if you plan to use this method.
 }
 '''
 class WAAL(Strategy):
-	def __init__(self, dataset, net, args_input, args_task):
+	def __init__(self, dataset, net, args_input, args_task): #WAAL类的构造函数，接收四个参数：dataset（数据集）、net（神经网络）、args_input（输入参数）、args_task（任务参数）
 		super(WAAL, self).__init__(dataset, net, args_input, args_task)
 		self.selection = 10
 

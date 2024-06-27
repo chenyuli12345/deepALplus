@@ -14,19 +14,23 @@ class Data:
         self.handler = handler
         self.args_task = args_task
         
-        self.n_pool = len(X_train)
-        self.n_test = len(X_test)
+        self.n_pool = len(X_train) #n_pool是训练集的大小
+        self.n_test = len(X_test) #n_test是测试集的大小
         
-        self.labeled_idxs = np.zeros(self.n_pool, dtype=bool)
+        self.labeled_idxs = np.zeros(self.n_pool, dtype=bool) #生成一个长度为n_pool的全0数组，然后讲数组元素的数据类型转为布尔型，这样元素0就表示False，即n_pool个False组成的数组
+        #例如，当
         
-    def initialize_labels(self, num):
+    def initialize_labels(self, num): #Data类的一个方法，接收一个参数num，作用是在训练集中随机选择num个数据点，并将这些数据点标记为已标记
         # generate initial labeled pool
-        tmp_idxs = np.arange(self.n_pool)
-        np.random.shuffle(tmp_idxs)
-        self.labeled_idxs[tmp_idxs[:num]] = True
-    
+        tmp_idxs = np.arange(self.n_pool) #生成一个长度为n_pool的数组，数组元素为0到n_pool-1，代表数据池中所有可能的索引
+        np.random.shuffle(tmp_idxs) #将tmp_idxs数组中的元素随机打乱
+        self.labeled_idxs[tmp_idxs[:num]] = True #将（打乱后的）tmp_idxs数组中的前num个元素标记为True，即将这些数据点标记为已标记
+    #最后获得的labeled_idxs是一个长度为n_pool的数组，其中num个元素为True，其余元素为False，例如[ True False False  True  True False  True False  True False]
+
+
+
     def get_unlabeled_data_by_idx(self, idx):
-        unlabeled_idxs = np.arange(self.n_pool)[~self.labeled_idxs]
+        unlabeled_idxs = np.arange(self.n_pool)[~self.labeled_idxs] #首先生成一个0到n_pool-1的数组，~表示按位取反，
         return self.X_train[unlabeled_idxs][idx]
     
     def get_data_by_idx(self, idx):

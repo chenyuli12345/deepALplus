@@ -1,19 +1,22 @@
 import numpy as np
 import torch
-import torch.nn.functional as F
-import torch.optim as optim
-from torch.utils.data import DataLoader
+import torch.nn.functional as F #pytorch神经网络函数库，如激活函数和损失函数
+import torch.optim as optim #包含很多pytorch优化器，如SGD，Adam等  
+from torch.utils.data import DataLoader #pytorch加载数据库，用于批量加载数据集，同时提供了多种对数据集的操作方法（如数据打乱、并行、加载等）
 
-class Strategy:
+class Strategy: #定义一个名为Strategy的类
+
+    #Strategy类的构造函数，接收四个参数：dataset（数据集）、net（神经网络）、args_input（输入参数）、args_task（任务参数），并将这些参数保存为类的属性，以便在类的其他方法/函数中使用
     def __init__(self, dataset, net, args_input, args_task):
         self.dataset = dataset
         self.net = net
         self.args_input = args_input
         self.args_task = args_task
 
-    def query(self, n):
-        pass
+    def query(self, n): #接受一个参数n，
+        pass #pass是一个空操作语句，表示什么都不做。这里表示query方法的实现尚未完成。这是一个占位符，用于确保代码在没有实际逻辑时仍然可以编译和运行。
     
+    #定义一个名为get_labeled_count的方法，用于获取已标记数据的数量。不接受参数
     def get_labeled_count(self):
         labeled_idxs, labeled_data = self.dataset.get_labeled_data()
         return len(labeled_idxs)

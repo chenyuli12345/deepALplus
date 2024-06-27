@@ -1,9 +1,9 @@
 import numpy as np
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
-import torch.optim as optim
-from torch.utils.data import DataLoader
+import torch.nn.functional as F #pytorch神经网络函数库，如激活函数和损失函数
+import torch.optim as optim #包含很多pytorch优化器，如SGD，Adam等  
+from torch.utils.data import DataLoader #pytorch加载数据库，用于批量加载数据集，同时提供了多种对数据集的操作方法（如数据打乱、并行、加载等）
 import torchvision.models as models
 from torch.autograd import Variable
 from copy import deepcopy
@@ -43,7 +43,11 @@ class Net_LPL:
         epoch_loss = lpl_epoch
 
         dim = data.X.shape[1:]
+
+        #
         self.clf = self.net(dim = dim, pretrained = self.params['pretrained'], num_classes = self.params['num_class']).to(self.device)
+        
+        
         self.clf_lpl = self.net_lpl.to(self.device)
         #self.clf.train()
         if self.params['optimizer'] == 'Adam':
@@ -136,7 +140,7 @@ class Net_LPL:
         return self.clf
 
     def get_embeddings(self, data):
-        self.clf.eval()
+        self.clf.eval() #将模型设为评估模式
         embeddings = torch.zeros([len(data), self.clf.get_embedding_dim()])
         loader = DataLoader(data, shuffle=False, **self.params['loader_te_args'])
         with torch.no_grad():
