@@ -18,7 +18,7 @@ class Strategy: #定义一个名为Strategy的类
     
     #定义一个名为get_labeled_count的方法，用于获取已标记数据的数量。不接受参数
     def get_labeled_count(self):
-        labeled_idxs, labeled_data = self.dataset.get_labeled_data()
+        labeled_idxs, labeled_data = self.dataset.get_labeled_data() #
         return len(labeled_idxs)
     
     def get_model(self):
