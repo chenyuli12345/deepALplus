@@ -27,42 +27,56 @@ class Data:
         self.labeled_idxs[tmp_idxs[:num]] = True #将（打乱后的）tmp_idxs数组中的前num个元素标记为True，即将这些数据点标记为已标记
     #最后获得的labeled_idxs是一个长度为n_pool的数组，其中num个元素为True，其余元素为False，例如[ True False False  True  True False  True False  True False]
 
-
+    #按照索引idx获得第idx个未标记的数据点。输入参数是idx
     def get_unlabeled_data_by_idx(self, idx):
         unlabeled_idxs = np.arange(self.n_pool)[~self.labeled_idxs] #首先生成一个0到n_pool-1的数组，~表示按位取反，互换True和False，即生成一个未标记的数据点的索引数组
+        #最终获得的unlabeld_idxs是一个长度为n_pool的数组，数组的每个元素为对应labeled_idxs数组中为False的元素的索引，例如[1 2 4 6 7]
         return self.X_train[unlabeled_idxs][idx]
-    
+
+    #按照索引idx获得第idx个数据点以及对应的输出。输入参数是idx 
     def get_data_by_idx(self, idx):
         return self.X_train[idx], self.Y_train[idx]
 
+    #获取新的数据，不知道这里handler是干嘛的？？？
     def get_new_data(self, X, Y):
         return self.handler(X, Y, self.args_task['transform_train'])
 
+    #获取已标记的数据的索引，此外还要返回一个handler处理后的数据？？？
     def get_labeled_data(self):
-        labeled_idxs = np.arange(self.n_pool)[self.labeled_idxs]
+        labeled_idxs = np.arange(self.n_pool)[self.labeled_idxs] #首先生成一个0到n_pool-1的数组，即生成一个标记的数据点的索引数组
+        #最终获得的labeld_idxs是一个长度为n_pool的数组，数组的每个元素为对应labeled_idxs数组中为True的元素的索引，例如[0 3 5 8 9]
         return labeled_idxs, self.handler(self.X_train[labeled_idxs], self.Y_train[labeled_idxs], self.args_task['transform_train'])
     
+    #获取未标记的数据的索引，此外还要返回一个handler处理后的数据？？？
     def get_unlabeled_data(self):
-        unlabeled_idxs = np.arange(self.n_pool)[~self.labeled_idxs]
+        unlabeled_idxs = np.arange(self.n_pool)[~self.labeled_idxs]#首先生成一个0到n_pool-1的数组，~表示按位取反，互换True和False，即生成一个未标记的数据点的索引数组
+        #最终获得的unlabeld_idxs是一个长度为n_pool的数组，数组的每个元素为对应labeled_idxs数组中为False的元素的索引，例如[1 2 4 6 7]
         return unlabeled_idxs, self.handler(self.X_train[unlabeled_idxs], self.Y_train[unlabeled_idxs], self.args_task['transform_train'])
     
+    #获取训练数据，返回两个值。第一个是对self.labeled_idxs的深拷贝（原列表改变时，返回的副本不会受到影响）；第二个是一个handler处理后的数据？？？
     def get_train_data(self):
         return self.labeled_idxs.copy(), self.handler(self.X_train, self.Y_train, self.args_task['transform_train'])
 
+    #获取测试数据，返回一个handler处理后的数据？？？
     def get_test_data(self):
         return self.handler(self.X_test, self.Y_test, self.args_task['transform'])
     
+    #获取标记的数据，返回两个值。第一个是已标记的数据点（根据索引）；第二个是已标记的数据点的标签
     def get_partial_labeled_data(self):
-        labeled_idxs = np.arange(self.n_pool)[self.labeled_idxs]
+        labeled_idxs = np.arange(self.n_pool)[self.labeled_idxs] #首先生成一个0到n_pool-1的数组，即生成一个标记的数据点的索引数组
+        #最终获得的labeld_idxs是一个长度为n_pool的数组，数组的每个元素为对应labeled_idxs数组中为True的元素的索引，例如[0 3 5 8 9]
         return self.X_train[labeled_idxs], self.Y_train[labeled_idxs]
     
+    #获取未标记的数据，返回两个值。第一个是未标记的数据点（根据索引）；第二个是未标记的数据点的标签
     def get_partial_unlabeled_data(self):
-        unlabeled_idxs = np.arange(self.n_pool)[~self.labeled_idxs]
+        unlabeled_idxs = np.arange(self.n_pool)[~self.labeled_idxs]#首先生成一个0到n_pool-1的数组，~表示按位取反，互换True和False，即生成一个未标记的数据点的索引数组
+        #最终获得的unlabeld_idxs是一个长度为n_pool的数组，数组的每个元素为对应labeled_idxs数组中为False的元素的索引，例如[1 2 4 6 7]
         return self.X_train[unlabeled_idxs], self.Y_train[unlabeled_idxs]
 
+    #计算测试集的准确率，接受一个参数preds，即预测的标签。
     def cal_test_acc(self, preds):
         return 1.0 * (self.Y_test==preds).sum().item() / self.n_test
-
+        #self.n_test是测试集的大小，self.Y_test==preds是一个长度为n_test的布尔数组，数组的每个元素为对应位置的预测标签是否与真实标签相同，sum().item()是计算布尔数组中True的个数，即预测正确的个数
     
 def get_MNIST(handler, args_task):
     raw_train = datasets.MNIST('./data/MNIST', train=True, download=True)
