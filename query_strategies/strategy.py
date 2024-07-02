@@ -28,32 +28,39 @@ class Strategy: #定义一个名为Strategy的类
         return self.net.get_model()
 
     #更新数据集的是否有标签的布尔数组。接受两个参数：pos_idxs（正索引）和neg_idxs（负索引，可不提供，默认为None）。
-    #将数据集的labeled_idxs数组中的正索引位置的值设为True（若提供了负索引，则将负索引位置的值设为False）
+    #将数据集的labeled_idxs数组（判断数据集是否标记的布尔数组）中的正索引位置的值设为True（若提供了负索引，则将负索引位置的值设为False）
     def update(self, pos_idxs, neg_idxs=None):
         self.dataset.labeled_idxs[pos_idxs] = True
         if neg_idxs:
             self.dataset.labeled_idxs[neg_idxs] = False
 
+    #训练模型。接受两个参数：data（数据集，可不提供，默认为None）和model_name（模型名称，可不提供，默认为None）。
     def train(self, data = None, model_name = None):
-        if model_name == None:
-            if data == None:
+        if model_name == None: #若未提供模型名称
+            if data == None: #若未提供数据集
                 labeled_idxs, labeled_data = self.dataset.get_labeled_data()
-                self.net.train(labeled_data)
+                #labeled_idxs是一个数组，包含已经标记好的数据的索引。
+                #labeled_data是已经标记好的数据？？？
+                self.net.train(labeled_data) #调用net对象的train方法，传入已标记数据
             else:
-                self.net.train(data)
-        else:
-            if model_name == 'WAAL':
+                self.net.train(data) #调用net对象的train方法，传入数据集
+        else: #若提供了模型名称
+            if model_name == 'WAAL': #若模型名称为'WAAL'
                 labeled_idxs, labeled_data = self.dataset.get_labeled_data()
+                #labeled_idxs是一个数组，包含已经标记好的数据的索引。
+                #labeled_data是已经标记好的数据？？？
                 X_labeled, Y_labeled = self.dataset.get_partial_labeled_data()
                 X_unlabeled, Y_unlabeled = self.dataset.get_partial_unlabeled_data()
                 self.net.train(labeled_data, X_labeled, Y_labeled,X_unlabeled, Y_unlabeled)
             else:
                 raise NotImplementedError
 
+    #用模型预测数据。接受一个参数data（数据集）。
     def predict(self, data):
         preds = self.net.predict(data)
         return preds
 
+    #用模型预测数据的概率。接受一个参数data（数据集）。
     def predict_prob(self, data):
         probs = self.net.predict_prob(data)
         return probs

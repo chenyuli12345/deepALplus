@@ -30,14 +30,16 @@ def LossPredLoss(input, target, margin=1.0, reduction='mean'):
     
     return loss
 
+#网络的类
 class Net_LPL:
-    def __init__(self, net, params, device, net_lpl):
+    def __init__(self, net, params, device, net_lpl): #类的构造函数，接收四个参数：net（神经网络）、params（参数）、device（设备）、net_lpl（损失预测网络），用于初始化对象
+        #将构造函数接受的参数赋值给类的实例变量
         self.net = net
         self.params = params
         self.device = device
         self.net_lpl = net_lpl
         
-    def train(self, data, weight = 1.0, margin = 1.0 , lpl_epoch = 20):
+    def train(self, data, weight = 1.0, margin = 1.0 , lpl_epoch = 20): #类的一个方法train，用于训练模型。接收三个参数：data（数据集）、weight（权重，默认为1.0）、margin（边界，默认为1.0）、lpl_epoch（损失预测网络的训练轮数，默认为20）
         n_epoch = self.params['n_epoch']
         n_epoch = lpl_epoch + self.params['n_epoch']
         epoch_loss = lpl_epoch
