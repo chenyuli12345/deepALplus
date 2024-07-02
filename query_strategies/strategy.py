@@ -18,12 +18,17 @@ class Strategy: #定义一个名为Strategy的类
     
     #定义一个名为get_labeled_count的方法，用于获取已标记数据的数量。不接受参数
     def get_labeled_count(self):
-        labeled_idxs, labeled_data = self.dataset.get_labeled_data() #
-        return len(labeled_idxs)
+        labeled_idxs, labeled_data = self.dataset.get_labeled_data() 
+        #labeled_idxs是一个数组，包含已经标记好的数据的索引。
+        #labeled_data是已经标记好的数据？？？
+        return len(labeled_idxs) #返回已标记数据的数量
     
+    #获取net对象的模型
     def get_model(self):
         return self.net.get_model()
 
+    #更新数据集的是否有标签的布尔数组。接受两个参数：pos_idxs（正索引）和neg_idxs（负索引，可不提供，默认为None）。
+    #将数据集的labeled_idxs数组中的正索引位置的值设为True（若提供了负索引，则将负索引位置的值设为False）
     def update(self, pos_idxs, neg_idxs=None):
         self.dataset.labeled_idxs[pos_idxs] = True
         if neg_idxs:

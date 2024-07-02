@@ -1,9 +1,14 @@
 import numpy as np
 import torch
 import random
-import os
-from torchvision import datasets
+import os  #os模块在Python中用于与操作系统进行交互。它提供了很多方法，可以执行像读取、写入文件，查找环境变量，移动文件等操作系统级别的操作。
+from torchvision import datasets 
+#torchvision是一个包含了许多视觉处理工具和数据集的库，它是PyTorch的一个扩展库。
+#datasets模块包含了许多预先定义好的数据集，如CIFAR, MNIST等，这些数据集常常被用于机器学习和计算机视觉的训练
 from PIL import Image
+#PIL是Python Imaging Library的缩写，是Python的一个图像处理库
+#Image模块提供了基本的图像处理功能，如打开、操作和保存不同格式的图像。
+
 
 class Data:
     def __init__(self, X_train, Y_train, X_test, Y_test, handler, args_task):
