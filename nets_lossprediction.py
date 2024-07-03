@@ -40,36 +40,37 @@ class Net_LPL:
         self.net_lpl = net_lpl
         
     def train(self, data, weight = 1.0, margin = 1.0 , lpl_epoch = 20): #类的一个方法train，用于训练模型。接收三个参数：data（数据集）、weight（权重，默认为1.0）、margin（边界，默认为1.0）、lpl_epoch（损失预测网络的训练轮数，默认为20）
-        n_epoch = self.params['n_epoch']
-        n_epoch = lpl_epoch + self.params['n_epoch']
-        epoch_loss = lpl_epoch
+        n_epoch = self.params['n_epoch'] #从self.params字典中获取正常训练的迭代次数n_epoch
+        n_epoch = lpl_epoch + self.params['n_epoch'] #将损失预测训练的迭代次数（来自于输入参数）加到正常训练的迭代次数上
+        epoch_loss = lpl_epoch #将损失预测训练的迭代次数赋值给epoch_loss
 
-        dim = data.X.shape[1:]
+        dim = data.X.shape[1:] #获取数据集的维度
 
-        #
+        #创建一个网络模型实例self.clf，并将其移动到指定设备上（来自于参数）
         self.clf = self.net(dim = dim, pretrained = self.params['pretrained'], num_classes = self.params['num_class']).to(self.device)
         
-        
+        #将损失预测网络模型self.clf_lpl移动到指定设备上（来自于参数）
         self.clf_lpl = self.net_lpl.to(self.device)
         #self.clf.train()
-        if self.params['optimizer'] == 'Adam':
-            optimizer = optim.Adam(self.clf.parameters(), **self.params['optimizer_args'])
-        elif self.params['optimizer'] == 'SGD':
-            optimizer = optim.SGD(self.clf.parameters(), **self.params['optimizer_args'])
-        else:
-            raise NotImplementedError
-        optimizer_lpl = optim.Adam(self.clf_lpl.parameters(), lr = 0.01)
 
-        loader = DataLoader(data, shuffle=True, **self.params['loader_tr_args'])
-        self.clf.train()
-        self.clf_lpl.train()
-        for epoch in tqdm(range(1, n_epoch+1), ncols=100):
-            for batch_idx, (x, y, idxs) in enumerate(loader):
-                x, y = x.to(self.device), y.to(self.device)
-                optimizer.zero_grad()
-                optimizer_lpl.zero_grad()
-                out, feature = self.clf(x)
-                out, e1 = self.clf(x)
+        if self.params['optimizer'] == 'Adam': #如果参数字典中的优化器为Adam
+            optimizer = optim.Adam(self.clf.parameters(), **self.params['optimizer_args']) #创建一个优化器，括号内为要优化的参数，使用Adam优化方法。第一组参数为self.clf的参数，第二组参数为self.params字典中的优化器参数（解包字典，将其作为关键字传递给优化器）
+        elif self.params['optimizer'] == 'SGD': #如果参数字典中的优化器为SGD
+            optimizer = optim.SGD(self.clf.parameters(), **self.params['optimizer_args']) #创建一个优化器，括号内为要优化的参数，使用SGD优化方法。第一组参数为self.clf的参数，第二组参数为self.params字典中的优化器参数（解包字典，将其作为关键字传递给优化器）
+        else: #如果参数字典中的优化器不是Adam或SGD
+            raise NotImplementedError #抛出一个NotImplementedError异常，表示代码遇到了一个未实现的优化器类型
+        optimizer_lpl = optim.Adam(self.clf_lpl.parameters(), lr = 0.01) #创建另一个优化器实例，用于优化损失预测网络self.clf_lpl的参数，使用Adam优化方法，学习率为0.01
+
+        loader = DataLoader(data, shuffle=True, **self.params['loader_tr_args']) #使用DataLoader类创建一个数据加载器实例。这个加载器用于迭代地加载数据集。data变量代表了要加载的数据集，shuffle=True参数表示在每个epoch开始时，数据将被随机打乱，以帮助模型更好地学习
+        self.clf.train() #将神经网络设置为训练模式而不是评估模式
+        self.clf_lpl.train() #将损失预测网络设置为训练模式而不是评估模式
+        for epoch in tqdm(range(1, n_epoch+1), ncols=100): #循环迭代n_epoch次，每次迭代的索引为epoch。ncols表示将进度条的宽度设置为100
+            for batch_idx, (x, y, idxs) in enumerate(loader): #循环遍历数据加载器（loader）返回的每个批次的数据。每个批次包含输入数据x，标签y，和索引idxs
+                x, y = x.to(self.device), y.to(self.device) #将输入数据x和标签y移动到指定设备上（来自于参数）
+                optimizer.zero_grad() #清除之前的梯度，为新的梯度计算做准备
+                optimizer_lpl.zero_grad() #清除之前的梯度，为新的梯度计算做准备
+                out, feature = self.clf(x) #将输入数据x传递给神经网络self.clf（前向传播），得到输出out和特征feature
+                out, e1 = self.clf(x) #？？重复执行上一步，将输入数据x传递给神经网络self.clf（前向传播），得到输出out和特征feature
                 cross_ent = nn.CrossEntropyLoss(reduction='none')
                 target_loss = cross_ent(out,y)
                 if epoch >= epoch_loss:
